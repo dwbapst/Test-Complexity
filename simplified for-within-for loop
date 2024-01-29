@@ -1,0 +1,34 @@
+# sub sample values
+
+m_pw_dist_ssList <- list()
+
+m_NND_ssList <- list()
+
+for(i in 1:length(withinInterval_list)){
+
+   traitsInInterval <- traits[withinInterval_list[[i]],]
+   validTaxon <- apply(traitsInInterval, 1, function(x) all(!is.na(x)))
+   traitsValid <- scale(traitsInInterval[validTaxon,])
+   
+   m_pw_dist_ss <- numeric()
+   m_NND_ss <- numeric()
+   
+   for(rep in 1:nRep){
+      pickedTaxa <- sample(1:nrow(traitsValid), size=rareSS, replace = FALSE)
+      traitsPicked <- traitsValid[pickedTaxa,]
+
+      distmatrix <- dist(traitsPicked, diag = FALSE)
+
+      m_pw_dist_ss[rep]<- mean(distmatrix)
+      m_NND_ss[rep] <- mean(nearestNeighborDist(distmatrix))
+      }
+
+   m_pw_dist_ssList[[i]] <- m_pw_dist_ss
+   m_NND_ssList[[i]] <- m_NND_ss
+
+   }
+
+meanSS_m_pw_dist <- sapply(m_pw_dist_ssList, mean)
+meanSS_m_NND <- sapply(m_NND_ssList, mean)
+
+
